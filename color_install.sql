@@ -88,6 +88,52 @@ SELECT pgtle.install_extension(
     $$ IMMUTABLE
        STRICT LANGUAGE plpgsql;
        
+       
+    -- Convert from argb ints
+    CREATE FUNCTION public.argb(a integer, r integer, g integer, b integer)
+        RETURNS color AS
+    $$
+    DECLARE
+        _argb integer;
+    BEGIN
+        -- Ensure value is in range
+        IF (a < 0 OR a > 255) THEN
+            RAISE EXCEPTION 'Alpha must be between 0 and 255.';
+        END IF;
+        IF (r < 0 OR r > 255) THEN
+            RAISE EXCEPTION 'Red must be between 0 and 255.';
+        END IF;
+        IF (g < 0 OR g > 255) THEN
+            RAISE EXCEPTION 'Green must be between 0 and 255.';
+        END IF;
+        IF (b < 0 OR b > 255) THEN
+            RAISE EXCEPTION 'Blue must be between 0 and 255.';
+        END IF;
+    
+        -- Convert to hex
+        _argb :=
+                (a << 24) +
+                (r << 16) +
+                (g << 8) +
+                (b << 0);
+    
+        -- Convert to color
+        RETURN argb(_argb);
+    END
+    $$ IMMUTABLE
+       STRICT LANGUAGE plpgsql;
+       
+       
+    -- Convert from rgb ints
+    CREATE FUNCTION public.rgb(r integer, g integer, b integer)
+        RETURNS color AS
+    $$
+    BEGIN
+        RETURN argb(255, r, g, b);
+    END
+    $$ IMMUTABLE
+       STRICT LANGUAGE plpgsql;
+       
 
     -- Convert to int
     CREATE FUNCTION public.get_argb(value color)
