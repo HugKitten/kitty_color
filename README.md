@@ -1,17 +1,20 @@
 # pg_tle_color
 Small script to add a color type to postgresql using amazon's pg_tle extension. Internally all colors are stored as a int4 (4 byte integer)
 
-Simply run the provided script (after installing the [pg_tle](https://github.com/aws/pg_tle) extension) to add a new color type to the database.
+# Installation
+1. Install the [pg_tle](https://github.com/aws/pg_tle) extension.
+2. Enable the pg_tle extension using `CREATE EXTENSION IF NOT EXISTS "pg_tle";`
+3. Install the [color](https://github.com/HugKitten/pg_tle_color/blob/main/color_install.sql) extension.
+4. Enable the color extension using `CREATE EXTENSION IF NOT EXISTS "color";`
 
-# Examples
-The following example is going to assume you have the following table:
+### Using Color in a table
 ```
 CREATE TABLE colors(
   myColor color NOT NULL
 );
 ```
 
-## Parsing colors
+## Parsing Colors 
 ### Hex
 ```
 INSERT INTO colors VALUES('#FF0000');
@@ -39,7 +42,7 @@ INSERT INTO colors VALUES(argb(-1894835));
 ```
 - Values must be between -2147483648 and 2147483647.
 
-## Updating colors
+## Using Indivisual Values
 ### Update all colors to have an alpha of 255
 ```
 UPDATE colors set myColor = set_color_value(myColor, 'a', 255)
@@ -65,13 +68,13 @@ SELECT get_argb(myColor) FROM colors;
 - Values will be between -2147483648 and 2147483647.
 
 # Considerations
-## Why did you create this?
+### Why did you create this?
 I created this because I didn't like that there weren't any extensions that could store colors as 4 byte integers internally, so I created a small little extension to do that for me.
 
-## Can you add x feature?
+### Can you add x feature?
 Feel free to request any feature, and I'll consider adding it. This project does everything I need it to, so I don't plan on changing the script further. That being said, feel free to fork my project or create pull requests with changes you've made.
 
-## Unsupported features
+### Unsupported features
 Currently the script could be improved with the following features, but there are no plains to support them at the moment.
 - CMYK format
 - Float and other numeric version of properties
@@ -84,7 +87,7 @@ Currently the script could be improved with the following features, but there ar
 - Other output color formats
 - Custom encode/decode modes
 
-## Types that may be added in the future to support these features
+### Types that may be added in the future to support these features
 - ColorF type for ARGB colors in float format
 - RGB type for RGB colors without alpha
 - RGBF type for RGB colors without alpha in float format
