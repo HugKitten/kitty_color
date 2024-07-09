@@ -1,7 +1,7 @@
 # pg_tle_color
 Small script to add a color type to postgresql using amazon's pg_tle extension
 
-Simply run the provided script (after installing the [https://github.com/aws/pg_tle](pg_tle) extension) to add a new color type to the database.
+Simply run the provided script (after installing the [pg_tle](https://github.com/aws/pg_tle) extension) to add a new color type to the database.
 
 ## Examples
 
