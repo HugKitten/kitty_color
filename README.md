@@ -24,7 +24,7 @@ INSERT INTO colors VALUES(rgb(255, 0, 0));
 
 ### Seperate ARGB value
 ```
-INSERT INTO colors VALUES(rgb(255, 255, 0, 0));
+INSERT INTO colors VALUES(argb(255, 255, 0, 0));
 ```
 
 ### ARGB number
