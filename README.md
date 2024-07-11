@@ -63,6 +63,7 @@ UPDATE colors SET myColor = color_set_char(myColor, 'a => 255');
 ```
 
 ## Selecting values
+```
 -- Get all values with alpha of 255
 SELECT myColor FROM colors WHERE myColor @> 'a => 255';
 -- Using functions
