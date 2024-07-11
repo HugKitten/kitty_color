@@ -9,40 +9,39 @@ Small script to add a color type to postgresql using amazon's pg_tle extension.
 ## Inserting color
 ```pgsql
 CREATE TABLE colors(
-  -- color takes up 4 bytes (a byte for Alpha, Red, Green, and Blue)
-  -- Float ARGB values not supported
   myColor color NOT NULL
 );
+
 INSERT INTO colors(myColor)
-  -- Clear color
-  VALUES (color())
-  -- ARGB color
+  VALUES -- Clear color
+         (color())
+         -- ARGB color
          (color(255, 255, 0, 0))
-  -- RGB color
+         -- RGB color
          (color(0, 255, 255))
-  -- Hex color
+         -- Hex color
          ('#FFFFFF')
-  -- Without hash tag
+         -- Without hash tag
          ('FFFFFF')
-  -- With alpha
+         -- With alpha
          ('#FFFFFFFF')
-  -- Without hash tag with alpha
+         -- Without hash tag with alpha
          ('FFFFFFFF')
 ```
 
 ## Reading ARGB Values 
 ```pgsql
--- ARGB values
+-- #FFFFFFFF format
+SELECT c
+FROM colors c;
+-- Integer format
+SELECT int4(c)
+FROM colors c;
+-- ARGB as separate values
 SELECT c -> 'a' as 'alpha',
        c -> 'r' as 'red',
        c -> 'g' as 'green',
        c -> 'b' as 'blue'
-FROM colors c;
--- integer
-SELECT int4(c)
-FROM colors c;
--- #FFFFFFFF format
-SELECT c
 FROM colors c;
 -- With functions
 SELECT color_get_char(c, 'a') as 'alpha',
