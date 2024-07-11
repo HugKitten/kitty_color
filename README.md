@@ -48,7 +48,7 @@ SELECT color_get_char(c, 'a') as 'alpha',
        color_get_char(c, 'r') as 'red',
        color_get_char(c, 'g') as 'green',
        color_get_char(c, 'b') as 'blue'
-FROM 'colors' c;
+FROM colors c;
 ```
 
 ## Updating values
