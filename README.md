@@ -1,4 +1,4 @@
-# pg_tle_color
+# kitty_color
 Small script to add a color type to postgresql using amazon's pg_tle extension. Internally all colors are stored as a int4 (4 byte integer)
 
 # Installation
