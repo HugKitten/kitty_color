@@ -12,35 +12,39 @@ CREATE TABLE colors(
   myColor color NOT NULL
 );
 
-INSERT INTO colors(myColor)
-  VALUES -- Clear color
-         (color())
-         -- ARGB color
-         (color(255, 255, 0, 0))
-         -- RGB color
-         (color(0, 255, 255))
-         -- Hex color
-         ('#FFFFFF')
-         -- Without hash tag
-         ('FFFFFF')
-         -- With alpha
-         ('#FFFFFFFF')
-         -- Without hash tag with alpha
-         ('FFFFFFFF')
+-- Clear color
+INSERT INTO colors(myColor) VALUES (color());
+
+-- ARGB color
+INSERT INTO colors(myColor) VALUES (color(255, 255, 0, 0));
+
+-- RGB color
+INSERT INTO colors(myColor) VALUES (color(0, 255, 255));
+
+-- Hex color
+INSERT INTO colors(myColor) VALUES ('#FFFFFF');
+
+-- Other valid formats
+INSERT INTO colors(myColor) VALUES ('FFFFFF');
+INSERT INTO colors(myColor) VALUES ('#FFFFFFFF');
+INSERT INTO colors(myColor) VALUES ('FFFFFFFF');
 ```
 
 ## Reading ARGB Values 
 ```pgsql
 -- #FFFFFFFF format
 SELECT c FROM colors c;
+
 -- Integer format
 SELECT int4(c) FROM colors c;
+
 -- ARGB as separate values
 SELECT c -> 'a' as 'alpha',
        c -> 'r' as 'red',
        c -> 'g' as 'green',
        c -> 'b' as 'blue'
 FROM colors c;
+
 -- With functions
 SELECT color_get_char(c, 'a') as 'alpha',
        color_get_char(c, 'r') as 'red',
@@ -53,8 +57,10 @@ FROM colors c;
 ```pgsql
 -- Set all values to have alpha of 255
 UPDATE colors SET myColor = myColor #= 'a => 255';
+
 -- Using functions
 UPDATE colors SET myColor = color_set(myColor, 'a', 255);
+
 -- Using hstore
 UPDATE colors SET myColor = color_set(myColor, 'a => 255');
 ```
@@ -63,8 +69,10 @@ UPDATE colors SET myColor = color_set(myColor, 'a => 255');
 ```pgsql
 -- Get all values with alpha of 255
 SELECT myColor FROM colors WHERE myColor @> 'a => 255';
+
 -- Using functions
 SELECT myColor FROM colors WHERE color_contains(myColor, 'a', 255);
+
 -- Using hstore
 SELECT myColor FROM colors WHERE color_contains(myColor, 'a => 255');
 ```
