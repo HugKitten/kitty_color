@@ -312,7 +312,15 @@ CREATE OPERATOR #= (
     );
 
 -- Contains operator
-CREATE OR REPLACE FUNCTION public.color_contains(input public.color, store hstore)
+CREATE OR REPLACE FUNCTION public.color_contains(input public.color, key char, value integer)
+    RETURNS boolean AS
+$$
+BEGIN
+    RETURN public.color_get_char(input, char) == value;
+END;
+$$ IMMUTABLE
+   STRICT LANGUAGE plpgsql;
+   CREATE OR REPLACE FUNCTION public.color_contains(input public.color, store hstore)
     RETURNS boolean AS
 $$
 DECLARE
