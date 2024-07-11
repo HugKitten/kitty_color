@@ -3,69 +3,73 @@ Small script to add a color type to postgresql using amazon's pg_tle extension. 
 
 # Installation
 1. Install the [pg_tle](https://github.com/aws/pg_tle) extension.
-2. Enable the pg_tle extension using `CREATE EXTENSION IF NOT EXISTS "pg_tle";`
 3. Install the [color](https://github.com/HugKitten/pg_tle_color/blob/main/color_install.sql) extension.
-4. Enable the color extension using `CREATE EXTENSION IF NOT EXISTS "color";`
+4. Enable the color extension using `CREATE EXTENSION IF NOT EXISTS "kitty_color";`
 
-### Using Color in a table
+## Inserting color
 ```
 CREATE TABLE colors(
+  -- color takes up 4 bytes (a byte for Alpha, Red, Green, and Blue)
+  -- Float ARGB values not supported
   myColor color NOT NULL
 );
+INSERT INTO colors(myColor)
+  -- Clear color
+  VALUES (color())
+  -- ARGB color
+         (color(255, 255, 0, 0))
+  -- RGB color
+         (color(0, 255, 255))
+  -- Hex color
+         ('#FFFFFF')
+  -- Without hash tag
+         ('FFFFFF')
+  -- With alpha
+         ('#FFFFFFFF')
+  -- Without hash tag and with alpha
+         ('#FFFFFF')
 ```
 
-## Parsing Colors 
-### Hex
+## Reading ARGB Values 
 ```
-INSERT INTO colors VALUES('#FF0000');
+-- ARGB values
+SELECT c -> 'a' as 'alpha',
+       c -> 'r' as 'red',
+       c -> 'g' as 'green',
+       c -> 'b' as 'blue'
+FROM colors c;
+-- integer
+SELECT int4(c)
+FROM colors c;
+-- #FFFFFFFF format
+SELECT c
+FROM colors c;
+-- With functions
+SELECT color_get_char(c, 'a') as 'alpha',
+       color_get_char(c, 'r') as 'red',
+       color_get_char(c, 'g') as 'green',
+       color_get_char(c, 'b') as 'blue'
+FROM 'colors' c;
 ```
-- Hashtag is not required.
-- Supports both RGB `#FFFFFF`, and ARGB `#FFFFFFFF` format.
 
-### Seperate Red, Green, and Blue values
+## Updating values
 ```
-INSERT INTO colors VALUES(rgb(255, 0, 0));
+-- Set all values to have alpha of 255
+UPDATE colors SET myColor = myColor #= 'a => 255';
+-- Using functions
+UPDATE colors SET myColor = color_set_char(myColor, 'a', 255);
+-- Using hstore
+UPDATE colors SET myColor = color_set_char(myColor, 'a => 255');
 ```
-- Values must be between 0 and 255,
-- Floats and other types not supported.
 
-### Seperate Alpha, Red, Green, and Blue values
+## Selecting values
+-- Get all values with alpha of 255
+SELECT myColor FROM colors WHERE myColor @> 'a => 255';
+-- Using functions
+SELECT myColor FROM colors WHERE color_contains(myColor, 'a', 255);
+-- Using hstore
+SELECT myColor FROM colors WHERE color_contains(myColor, 'a => 255');
 ```
-INSERT INTO colors VALUES(argb(255, 255, 0, 0));
-```
-- Values must be between 0 and 255,
-- Floats and other types not supported.
-
-### Number format
-```
-INSERT INTO colors VALUES(argb(-1894835));
-```
-- Values must be between -2147483648 and 2147483647.
-
-## Using Indivisual Values
-### Update all colors to have an alpha of 255
-```
-UPDATE colors set myColor = set_color_value(myColor, 'a', 255)
-WHERE get_color_value(myColor, 'a') != 255;
-```
-- A for Alpha
-- R for Red 
-- G for Green
-- B for Blue
-
-## Formating colors
-### Hex
-```
-SELECT myColor FROM colors;
-```
-- Outputs in #FFFFFFFF format
-- RGB format (non-alpha) not supported.
-
-### Integer
-```
-SELECT get_argb(myColor) FROM colors;
-```
-- Values will be between -2147483648 and 2147483647.
 
 # Considerations
 ### Why did you create this?
@@ -84,7 +88,7 @@ Currently the script could be improved with the following features, but there ar
 - Tint value
 - Shade value
 - Outputting in RGB hex format #FFFFFF instead of #FFFFFFFF
-- Other output color formats
+- Other color formats
 - Custom encode/decode modes
 
 ### Types that may be added in the future to support these features
@@ -92,4 +96,4 @@ Currently the script could be improved with the following features, but there ar
 - RGB type for RGB colors without alpha
 - RGBF type for RGB colors without alpha in float format
 - Methods to output color in desired format using string codes ``color_to_string(myColor, 'R:int, B:int, G:int, A:float')`` for example.
-- Decode, and Encode method as well as a way to set the method used to parse strings.
+- More decode, and encode options
