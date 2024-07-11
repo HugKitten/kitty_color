@@ -254,7 +254,7 @@ CREATE OPERATOR -> (
     );
 
 -- Set value no subscripting :(
-CREATE OR REPLACE FUNCTION public.color_set_char(value public.color, color_type char, color_value integer)
+CREATE OR REPLACE FUNCTION public.color_set(value public.color, color_type char, color_value integer)
     RETURNS public.color AS
 $$
 DECLARE
@@ -286,7 +286,7 @@ $$ IMMUTABLE
    STRICT LANGUAGE plpgsql;
 
 -- Set values with hstore
-CREATE OR REPLACE FUNCTION public.color_set_hstore(value public.color, store hstore)
+CREATE OR REPLACE FUNCTION public.color_set(value public.color, store hstore)
     RETURNS public.color AS
 $$
 DECLARE
@@ -298,7 +298,7 @@ BEGIN
     FOREACH _k IN ARRAY akeys(store)
     LOOP
         _v := store -> _k;
-        _r := coalesce(color_set_char(_r, _k, _v::integer), _r);
+        _r := coalesce(color_set(_r, _k, _v::integer), _r);
     END LOOP;
     RETURN _r;
 END;
@@ -308,7 +308,7 @@ CREATE OPERATOR #= (
     LEFTARG = public.color,
     RIGHTARG = hstore,
     COMMUTATOR = #=,
-    PROCEDURE = public.color_set_hstore
+    PROCEDURE = public.color_set
     );
 
 -- Contains operator
