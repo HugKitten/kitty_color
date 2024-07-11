@@ -32,11 +32,9 @@ INSERT INTO colors(myColor)
 ## Reading ARGB Values 
 ```pgsql
 -- #FFFFFFFF format
-SELECT c
-FROM colors c;
+SELECT c FROM colors c;
 -- Integer format
-SELECT int4(c)
-FROM colors c;
+SELECT int4(c) FROM colors c;
 -- ARGB as separate values
 SELECT c -> 'a' as 'alpha',
        c -> 'r' as 'red',
@@ -56,9 +54,9 @@ FROM colors c;
 -- Set all values to have alpha of 255
 UPDATE colors SET myColor = myColor #= 'a => 255';
 -- Using functions
-UPDATE colors SET myColor = color_set_char(myColor, 'a', 255);
+UPDATE colors SET myColor = color_set(myColor, 'a', 255);
 -- Using hstore
-UPDATE colors SET myColor = color_set_char(myColor, 'a => 255');
+UPDATE colors SET myColor = color_set(myColor, 'a => 255');
 ```
 
 ## Selecting values
