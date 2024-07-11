@@ -78,13 +78,13 @@ SELECT myColor FROM colors WHERE color_contains(myColor, 'a => 255');
 ```
 
 # Considerations
-### Why did you create this?
+## Why did you create this?
 I created this because I didn't like that there weren't any extensions that could store colors as 4 byte integers internally, so I created a small little extension to do that for me.
 
-### Can you add x feature?
+## Can you add x feature?
 Feel free to request any feature, and I'll consider adding it. This project does everything I need it to, so I don't plan on changing the script further. That being said, feel free to fork my project or create pull requests with changes you've made.
 
-### Unsupported features
+## Unsupported features
 Currently the script could be improved with the following features, but there are no plains to support them at the moment.
 - CMYK format
 - Float and other numeric version of properties
@@ -97,7 +97,7 @@ Currently the script could be improved with the following features, but there ar
 - Other color formats
 - Custom encode/decode modes
 
-### Types that may be added in the future to support these features
+## Types that may be added in the future to support these features
 - ColorF type for ARGB colors in float format
 - RGB type for RGB colors without alpha
 - RGBF type for RGB colors without alpha in float format
