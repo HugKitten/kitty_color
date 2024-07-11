@@ -4,7 +4,7 @@ Small script to add a color type to postgresql using amazon's pg_tle extension.
 # Installation
 1. Install the [pg_tle](https://github.com/aws/pg_tle) extension.
 3. Install the [kitty_color](https://github.com/HugKitten/pg_tle_color/blob/main/color_install.sql) extension. (Run the script)
-4. Enable the color extension using `CREATE EXTENSION IF NOT EXISTS "kitty_color";`
+4. Enable the extension using `CREATE EXTENSION IF NOT EXISTS "kitty_color";`
 
 ## Inserting color
 ```
