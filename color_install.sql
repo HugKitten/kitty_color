@@ -74,30 +74,6 @@ END
 $$ IMMUTABLE
    STRICT LANGUAGE plpgsql;
 
--- Constructor for int
-CREATE OR REPLACE FUNCTION public.color(value integer)
-    RETURNS public.color AS
-$$
-DECLARE
-    _t text;
-BEGIN
-    -- Ensure value is in range
-    IF (value < -2147483648 OR value > 2147483647) THEN
-        RAISE EXCEPTION 'Value must be within range of an 4 byte integer.';
-    END IF;
-
-    -- Convert to hex
-    _t := to_hex(value);
-
-    -- Pad to fill size
-    _t := lpad(_t, 8, '0');
-
-    -- Convert to color
-    RETURN _t::public.color;
-END
-$$ IMMUTABLE
-   STRICT LANGUAGE plpgsql;
-
 -- Constructor for ARGB
 CREATE OR REPLACE FUNCTION public.color(a integer, r integer, g integer, b integer)
     RETURNS public.color AS
@@ -142,8 +118,9 @@ END
 $$ IMMUTABLE
    STRICT LANGUAGE plpgsql;
 
--- Operators
--- Convert to int4
+
+-- Casts
+-- Cast to int4
 CREATE OR REPLACE FUNCTION public.int4(value bytea)
     RETURNS int4 AS
 $$
@@ -156,7 +133,36 @@ END;
 $$ IMMUTABLE
    STRICT LANGUAGE plpgsql;
 SELECT pgtle.create_operator_func('public', 'color', 'public.int4(bytea)'::regprocedure);
+CREATE CAST (color AS int4) WITH FUNCTION int4(color) AS IMPLICIT;
 
+
+-- Cast from int
+CREATE OR REPLACE FUNCTION public.color(value integer)
+    RETURNS public.color AS
+$$
+DECLARE
+    _t text;
+BEGIN
+    -- Ensure value is in range
+    IF (value < -2147483648 OR value > 2147483647) THEN
+        RAISE EXCEPTION 'Value must be within range of an 4 byte integer.';
+    END IF;
+
+    -- Convert to hex
+    _t := to_hex(value);
+
+    -- Pad to fill size
+    _t := lpad(_t, 8, '0');
+
+    -- Convert to color
+    RETURN _t::public.color;
+END
+$$ IMMUTABLE
+   STRICT LANGUAGE plpgsql;
+CREATE CAST (int4 AS color) WITH FUNCTION color(int4) AS IMPLICIT;
+
+
+-- Operators
 -- Equal
 CREATE OR REPLACE FUNCTION public.color_eq(l bytea, r bytea)
     RETURNS boolean AS
