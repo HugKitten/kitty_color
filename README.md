@@ -7,45 +7,46 @@ Small script to add a color type to postgresql using amazon's pg_tle extension.
 4. Enable the extension using `CREATE EXTENSION IF NOT EXISTS "kitty_color";`
 
 ## Inserting color
+***The following code assumes the following***
 ```pgsql
 CREATE TABLE colors(
   myColor color NOT NULL
 );
-
--- Clear color
-INSERT INTO colors(myColor) VALUES (color());
-
--- ARGB color
-INSERT INTO colors(myColor) VALUES (color(255, 255, 0, 0));
-
--- RGB color
-INSERT INTO colors(myColor) VALUES (color(0, 255, 255));
-
--- Hex color
-INSERT INTO colors(myColor) VALUES ('#FFFFFF');
-
--- Other valid formats
-INSERT INTO colors(myColor) VALUES ('FFFFFF');
-INSERT INTO colors(myColor) VALUES ('#FFFFFFFF');
-INSERT INTO colors(myColor) VALUES ('FFFFFFFF');
 ```
 
-## Reading ARGB Values 
+**Inserting color**
 ```pgsql
--- #FFFFFFFF format
-SELECT c FROM colors c;
+INSERT INTO colors(myColor) VALUES (color(255, 0, 128));      -- Red, Green, Blue
+INSERT INTO colors(myColor) VALUES ('#FF007E');               -- RGB hex
+INSERT INTO colors(myColor) VALUES ('FF007E');                -- Without Hashtag
+```
 
--- Integer format
-SELECT int4(c) FROM colors c;
+**Inserting transparrent color alpha**
+```pgsql
+INSERT INTO colors(myColor) VALUES (color(64, 128, 0, 255));  -- Alpha, Red, Green, Blue
+INSERT INTO colors(myColor) VALUES ('#407E00FF');             -- ARGB Hex
+INSERT INTO colors(myColor) VALUES ('407E00FF');              -- Without Hashtag
+INSERT INTO colors(myColor) VALUES (1081999615);              -- ARGB int
+INSERT INTO colors(myColor) VALUES (color());                 -- Clear
+```
 
--- ARGB as separate values
+## Selecting colors
+**Whole value** 
+```pgsql
+SELECT c FROM colors c;                                       -- ARGB Hex
+SELECT c::int4 FROM colors c;                                 -- ARGB int
+SELECT int4(c) FROM colors c;                                 -- Using function
+```
+
+**Individual values**
+```pgsql
 SELECT c -> 'a' as 'alpha',
        c -> 'r' as 'red',
        c -> 'g' as 'green',
        c -> 'b' as 'blue'
 FROM colors c;
 
--- With functions
+-- Using function 
 SELECT color_get_char(c, 'a') as 'alpha',
        color_get_char(c, 'r') as 'red',
        color_get_char(c, 'g') as 'green',
@@ -53,28 +54,44 @@ SELECT color_get_char(c, 'a') as 'alpha',
 FROM colors c;
 ```
 
-## Updating values
+## Updating ARGB values
 ```pgsql
--- Set all values to have alpha of 255
-UPDATE colors SET myColor = myColor #= 'a => 255';
+UPDATE colors SET myColor = myColor #= 'a => 64, r => 128, g => 0, b => 255';
+UPDATE colors SET myColor = myColor #= 'a => 64';
+UPDATE colors SET myColor = myColor #= 'r => 128';
+UPDATE colors SET myColor = myColor #= 'g => 0';
+UPDATE colors SET myColor = myColor #= 'b => 255';
+```
 
--- Using functions
-UPDATE colors SET myColor = color_set(myColor, 'a', 255);
+**Using functions**
+```pgsql
+UPDATE colors SET myColor = color_set(myColor, 'a', 64);
+UPDATE colors SET myColor = color_set(myColor, 'r', 128);
+UPDATE colors SET myColor = color_set(myColor, 'g', 0);
+UPDATE colors SET myColor = color_set(myColor, 'b', 255);
+```
 
--- Using hstore
-UPDATE colors SET myColor = color_set(myColor, 'a => 255');
+**Using hstore**
+```pgsql
+UPDATE colors SET myColor = color_set(myColor, 'a => 64, r => 128, g => 0, b => 255');
+UPDATE colors SET myColor = color_set(myColor, 'a => 64');
+UPDATE colors SET myColor = color_set(myColor, 'r => 128');
+UPDATE colors SET myColor = color_set(myColor, 'g => 0');
+UPDATE colors SET myColor = color_set(myColor, 'b => 255');
 ```
 
 ## Selecting values
+**Selecting values with alpha of 255**
 ```pgsql
--- Get all values with alpha of 255
 SELECT myColor FROM colors WHERE myColor @> 'a => 255';
-
--- Using functions
 SELECT myColor FROM colors WHERE color_contains(myColor, 'a', 255);
-
--- Using hstore
 SELECT myColor FROM colors WHERE color_contains(myColor, 'a => 255');
+```
+
+**With multiple values**
+```pgsql
+SELECT myColor FROM colors WHERE myColor @> 'r => 255, g => 128';
+SELECT myColor FROM colors WHERE color_contains(myColor, 'r => 255, g => 128');
 ```
 
 # Considerations
